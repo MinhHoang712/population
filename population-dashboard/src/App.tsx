@@ -3,11 +3,21 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Paper
+  Paper,
+  MenuItem,
+  TextField
 } from "@mui/material";
 import MapComponent from "./components/map/Map";
+import { useState } from "react";
 
 function App() {
+
+  const [selectedYear, setSelectedYear] =
+    useState(2023);
+
+
+  const [provinceName, setProvinceName] =
+    useState("");
 
   return (
 
@@ -25,11 +35,15 @@ function App() {
       <AppBar
         position="static"
         sx={{
-          flexShrink:0
+          flexShrink: 0
         }}
       >
 
-        <Toolbar>
+        <Toolbar sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2
+        }}>
 
           <Typography
             variant="h6"
@@ -38,6 +52,56 @@ function App() {
             Population Dashboard
 
           </Typography>
+
+
+          <TextField
+            select
+            size="small"
+            value={selectedYear}
+            onChange={(e) =>
+              setSelectedYear(
+                Number(e.target.value)
+              )
+            }
+            sx={{
+              mr: 2,
+              bgcolor: "white",
+              borderRadius: 1
+            }}
+          >
+            {
+              Array.from(
+                { length: 15 },
+                (_, i) => 2016 + i
+              ).map(year => (
+                <MenuItem
+                  key={year}
+                  value={year}
+                >
+                  {year}
+                </MenuItem>
+              ))
+            }
+          </TextField>
+
+          <TextField
+            size="small"
+            placeholder="Mã tỉnh hoặc tên tỉnh"
+            value={provinceName}
+            onChange={(e) =>
+              setProvinceName(
+                e.target.value
+              )
+            }
+            sx={{
+              bgcolor: "white",
+              borderRadius: 1,
+              "& .MuiInputLabel-root": {
+                display: "none"
+              }
+            }}
+          />
+
 
         </Toolbar>
 
@@ -56,52 +120,37 @@ function App() {
         {/* MAP */}
         <Box
           sx={{
-            width: "70%",
-            minHeight:0,
+            width: "100%",
+            minHeight: 0,
             p: 1
           }}
         >
 
-        
-            <MapComponent />
 
-            <Box
-              sx={{
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-              }}
-            >
+          <MapComponent  
+              selectedYear={selectedYear}
+
+          />
+
+          <Box
+            sx={{
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
 
 
-            </Box>
+          </Box>
 
 
         </Box>
 
-
-        {/* CHART */}
-
-        <Box
-          sx={{
-            width: "30%",
-            p: 1,
-            overflowY: "auto",
-            "&::-webkit-scrollbar": {
-              display: "none"
-            },
-
-            scrollbarWidth: "none"
-          }}
-        >
-
-        
         </Box>
 
       </Box>
 
-    </Box>
 
   )
 

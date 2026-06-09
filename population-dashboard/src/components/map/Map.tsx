@@ -1,17 +1,71 @@
 import {
-    Box
+    Box,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableRow
 } from "@mui/material";
 
 import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
 
 
-import { provinceCoords } from "../../const/provinceCoords";
+import { provinceCoords34 } from "../../const/provinceCoords34";
+import { provinceCoords63 } from "../../const/provinceCoords63";
 import { CircleMarker } from "react-leaflet/CircleMarker";
 import { Popup } from "react-leaflet/Popup";
+import { useState } from "react";
 
+type MapComponentProps = {
+    selectedYear: number
+}
+function MapComponent({ selectedYear }: MapComponentProps) {
 
-function MapComponent() {
+    const provinces =
+        selectedYear >= 2025
+            ? provinceCoords34
+            : provinceCoords63
+
+    const [provinceData, setProvinceData] =
+        useState<any>(null);
+
+    const getIndicatorValue = (
+        indicatorName: string
+    ) => {
+
+        return provinceData?.data?.find(
+            (x: any) =>
+                x.indicator === indicatorName
+        )?.value ?? "-"
+    }
+
+    const loadProvinceData = async (
+        provinceCode: string
+    ) => {
+
+        try {
+            console.log('heh')
+            const res = await fetch(
+
+                `http://127.0.0.1:5000/api/province?code=${provinceCode}&year=${selectedYear}`
+
+            )
+
+            const data =
+                await res.json()
+
+            setProvinceData(data)
+
+        }
+        catch (err) {
+
+            console.error(err)
+
+        }
+
+    }
 
     return (
 
@@ -43,57 +97,156 @@ function MapComponent() {
                 />
 
                 {
+                    provinces.map((province) => {
 
-                    provinceCoords.map((province) => (
 
-                        <CircleMarker
+                        return (
 
-                            key={province.code}
+                            <CircleMarker
+                                key={province.code}
+                                center={province.coord}
+                                radius={6}
+                                pathOptions={{
+                                    color: "red",
+                                    fillColor: "red",
+                                    fillOpacity: 0.9,
+                                    weight: 1
+                                }}
 
-                            center={province.coord}
+                                eventHandlers={{
+                                    click: () => {
+                                        loadProvinceData(
+                                            province.code
+                                        )
 
-                            radius={6}
+                                    }
+                                }}
+                            >
 
-                            pathOptions={{
+                                <Popup>
 
-                                color: "red",
+                                    <div>
 
-                                fillColor: "red",
+                                        <b>
+                                            {provinceData?.provinceName ??
+                                                province.name}
+                                        </b>
 
-                                fillOpacity: 0.9,
+                                        <br />
 
-                                weight: 1
+                                        Mã tỉnh:
+                                        {" "}
+                                        {province.code}
 
-                            }}
+                                        {
 
-                        >
+                                            provinceData &&
+                                            provinceData.provinceCode === province.code && (
 
-                            <Popup>
+                                                <TableContainer
+                                                    component={Paper}
+                                                    sx={{
+                                                        mt: 1
+                                                    }}
+                                                >
 
-                                <div>
+                                                    <Table
+                                                        size="small"
+                                                    >
 
-                                    <b>
+                                                        <TableBody>
 
-                                        {province.name}
+                                                            <TableRow>
 
-                                    </b>
+                                                                <TableCell>
+                                                                    Dân số trung bình
+                                                                </TableCell>
 
-                                    <br />
+                                                                <TableCell align="right">
 
-                                    Mã tỉnh:
+                                                                    {
+                                                                        getIndicatorValue(
+                                                                            "DÂN SỐ TRUNG BÌNH"
+                                                                        )?.toLocaleString()
+                                                                    }
 
-                                    {" "}
+                                                                </TableCell>
 
-                                    {province.code}
+                                                            </TableRow>
 
-                                </div>
+                                                            <TableRow>
 
-                            </Popup>
+                                                                <TableCell>
+                                                                    Nam
+                                                                </TableCell>
 
-                        </CircleMarker>
+                                                                <TableCell align="right">
 
-                    ))
+                                                                    {
+                                                                        getIndicatorValue(
+                                                                            "DÂN SỐ TRUNG BÌNH CHIA THEO GIỚI TÍNH NAM"
+                                                                        )?.toLocaleString()
+                                                                    }
 
+                                                                </TableCell>
+
+                                                            </TableRow>
+
+                                                            <TableRow>
+
+                                                                <TableCell>
+                                                                    Nữ
+                                                                </TableCell>
+
+                                                                <TableCell align="right">
+
+                                                                    {
+                                                                        getIndicatorValue(
+                                                                            "DÂN SỐ TRUNG BÌNH CHIA THEO GIỚI TÍNH NỮ"
+                                                                        )?.toLocaleString()
+                                                                    }
+
+                                                                </TableCell>
+
+                                                            </TableRow>
+
+                                                            <TableRow>
+
+                                                                <TableCell>
+                                                                    Tổng số hộ
+                                                                </TableCell>
+
+                                                                <TableCell align="right">
+
+                                                                    {
+                                                                        getIndicatorValue(
+                                                                            "TỔNG SỐ HỘ DÂN CƯ"
+                                                                        )?.toLocaleString()
+                                                                    }
+
+                                                                </TableCell>
+
+                                                            </TableRow>
+
+                                                        </TableBody>
+
+                                                    </Table>
+
+                                                </TableContainer>
+
+                                            )
+
+                                        }
+
+                                    </div>
+
+                                </Popup>
+
+                            </CircleMarker>
+
+                        )
+
+                    })
                 }
 
             </MapContainer>
