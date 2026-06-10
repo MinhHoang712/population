@@ -145,6 +145,37 @@ def province():
 
     return result
 
+@app.route("/api/province/history")
+def province_history():
+
+    code = request.args.get(
+        "code"
+    )
+
+    year = int(
+        request.args.get(
+            "year",
+            2024
+        )
+    )
+
+    province_data = load_province_data(
+        code,
+        year
+    )
+
+    print(province_data)
+
+    if not province_data:
+
+        return {
+            "error":
+            "province not found"
+        }, 404
+
+    return province_data
+
+
 if __name__ == "__main__":
 
     app.run(

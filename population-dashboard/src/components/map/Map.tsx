@@ -1,11 +1,14 @@
 import {
     Box,
+    Button,
+    Card,
     Paper,
     Table,
     TableBody,
     TableCell,
     TableContainer,
-    TableRow
+    TableRow,
+    Typography
 } from "@mui/material";
 
 import { MapContainer } from 'react-leaflet/MapContainer'
@@ -17,6 +20,7 @@ import { provinceCoords63 } from "../../const/provinceCoords63";
 import { CircleMarker } from "react-leaflet/CircleMarker";
 import { Popup } from "react-leaflet/Popup";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type MapComponentProps = {
     selectedYear: number
@@ -28,8 +32,13 @@ function MapComponent({ selectedYear }: MapComponentProps) {
             ? provinceCoords34
             : provinceCoords63
 
+    const navigate =
+        useNavigate();
+
     const [provinceData, setProvinceData] =
         useState<any>(null);
+
+
 
     const getIndicatorValue = (
         indicatorName: string
@@ -144,7 +153,7 @@ function MapComponent({ selectedYear }: MapComponentProps) {
                                             provinceData.provinceCode === province.code && (
 
                                                 <TableContainer
-                                                    component={Paper}
+                                                    component={Card}
                                                     sx={{
                                                         mt: 1
                                                     }}
@@ -212,26 +221,31 @@ function MapComponent({ selectedYear }: MapComponentProps) {
 
                                                             <TableRow>
 
-                                                                <TableCell>
-                                                                    Tổng số hộ
+                                                                <TableCell
+                                                                    colSpan={2}
+                                                                    align="center"
+                                                                >
+                                                                    <Typography
+                                                                        variant="button"
+                                                                        sx={{
+                                                                            cursor: "pointer"
+                                                                        }}
+                                                                        onClick={() =>
+
+                                                                            navigate(
+
+                                                                                `/province/${province.code}`
+
+                                                                            )
+
+                                                                        }
+                                                                    >
+                                                                        Xem chi tiết
+                                                                    </Typography>
                                                                 </TableCell>
-
-                                                                <TableCell align="right">
-
-                                                                    {
-                                                                        getIndicatorValue(
-                                                                            "TỔNG SỐ HỘ DÂN CƯ"
-                                                                        )?.toLocaleString()
-                                                                    }
-
-                                                                </TableCell>
-
                                                             </TableRow>
-
                                                         </TableBody>
-
                                                     </Table>
-
                                                 </TableContainer>
 
                                             )
