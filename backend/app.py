@@ -14,19 +14,18 @@ BASE_DIR = Path(__file__).parent
 
 DATA63 = BASE_DIR / "63provincesdata"
 
-# DATA34 = BASE_DIR / "34provincesdata"
+DATA34 = BASE_DIR / "34provincesdata"
+
 def find_file(
     province_code,
     year
 ):
 
-    # folder = (
-    #     DATA34
-    #     if year >= 2025
-    #     else DATA63
-    # )
-
-    folder = DATA63
+    folder = (
+        DATA34
+        if year >= 2025
+        else DATA63
+    )
 
     pattern = str(
         folder /
@@ -99,9 +98,6 @@ def get_year_data(
         "provinceShortName":
             province_data["provinceShortName"],
 
-        "provinceName":
-            province_data["provinceName"],
-
         "year":
             year,
 
@@ -154,8 +150,7 @@ def province_history():
 
     year = int(
         request.args.get(
-            "year",
-            2024
+            "year"
         )
     )
 
