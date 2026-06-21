@@ -25,7 +25,7 @@ function App() {
       />
 
       <Route
-        path="/province/:code"
+        path="/province/:code/:year"
         element={<ProvinceDetailPage />}
       />
 

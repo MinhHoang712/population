@@ -168,14 +168,14 @@ function MapComponent({ selectedYear }: MapComponentProps) {
                                                             <TableRow>
 
                                                                 <TableCell>
-                                                                    Dân số trung bình
+                                                                    TỔNG SỐ HỘ DÂN CƯ
                                                                 </TableCell>
 
                                                                 <TableCell align="right">
 
                                                                     {
                                                                         getIndicatorValue(
-                                                                            "DÂN SỐ TRUNG BÌNH"
+                                                                            "TỔNG SỐ HỘ DÂN CƯ"
                                                                         )?.toLocaleString()
                                                                     }
 
@@ -234,7 +234,7 @@ function MapComponent({ selectedYear }: MapComponentProps) {
 
                                                                             navigate(
 
-                                                                                `/province/${province.code}`
+                                                                                `/province/${province.code}/${selectedYear}`
 
                                                                             )
 

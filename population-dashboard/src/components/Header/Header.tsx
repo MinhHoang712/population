@@ -3,60 +3,47 @@ import {
   Toolbar,
   Typography,
   TextField,
-  MenuItem
+  MenuItem,
+  Autocomplete
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { provinceCoords34 } from "../../const/provinceCoords34";
+import { provinceCoords63 } from "../../const/provinceCoords63";
 
 type HeaderProps = {
-
-  selectedYear: number;
-
-  setSelectedYear: (
-    year: number
-  ) => void;
-
-  provinceName: string;
-
-  setProvinceName: (
-    value: string
-  ) => void;
-
+  selectedYear: number
+  setSelectedYear: (v: number) => void
+  provinceName: string
+  setProvinceName: (v: string) => void
 }
 
 function Header({
-
   selectedYear,
-
   setSelectedYear,
-
   provinceName,
-
   setProvinceName
-
 }: HeaderProps) {
+
+  const navigate = useNavigate();
+
+  const provinces =
+    selectedYear >= 2025
+      ? provinceCoords34
+      : provinceCoords63
 
   return (
 
-    <AppBar
-      position="static"
-      sx={{
-        flexShrink: 0
-      }}
-    >
+    <AppBar position="static">
 
       <Toolbar
         sx={{
           display: "flex",
-          alignItems: "center",
           gap: 2
         }}
       >
 
-        <Typography
-          variant="h6"
-        >
-
-          Population Dashboard
-
+        <Typography variant="h6">
+          BẢN ĐỒ DÂN SỐ
         </Typography>
 
         <TextField
@@ -64,25 +51,16 @@ function Header({
           size="small"
           value={selectedYear}
           onChange={(e) =>
-
             setSelectedYear(
-
-              Number(
-                e.target.value
-              )
-
+              Number(e.target.value)
             )
-
           }
           sx={{
             bgcolor: "white",
-            borderRadius: 1,
-            minWidth: 120
+            borderRadius: 1
           }}
         >
-
           {
-
             Array.from(
               { length: 15 },
               (_, i) => 2016 + i
@@ -92,44 +70,83 @@ function Header({
                 key={year}
                 value={year}
               >
-
                 {year}
-
               </MenuItem>
 
             ))
-
           }
-
         </TextField>
 
-        <TextField
-          size="small"
-          placeholder="Mã tỉnh hoặc tên tỉnh"
-          value={provinceName}
-          onChange={(e) =>
+        <Autocomplete
 
-            setProvinceName(
-              e.target.value
-            )
+          options={provinces}
+
+          sx={{
+            width: 300,
+            bgcolor: "white",
+            borderRadius: 1
+          }}
+
+          inputValue={provinceName}
+
+          onInputChange={(_, value) =>
+            setProvinceName(value)
+          }
+
+          getOptionLabel={(option) =>
+
+            `${option.code} - ${option.name}`
 
           }
-          sx={{
-            bgcolor: "white",
-            borderRadius: 1,
-            minWidth: 250,
-            "& .MuiInputLabel-root": {
-              display: "none"
-            }
+
+          filterOptions={(options, state) => {
+
+            const keyword =
+              state.inputValue
+                .toLowerCase()
+
+            return options.filter(
+              p =>
+
+                p.code.includes(keyword) ||
+
+                p.name
+                  .toLowerCase()
+                  .includes(keyword)
+
+            )
+
           }}
+
+          renderInput={(params) => (
+
+            <TextField
+              {...params}
+              size="small"
+              placeholder="Mã tỉnh hoặc tên tỉnh"
+            />
+
+          )}
+
+          onChange={(_, province) => {
+
+            if (!province)
+              return
+
+            navigate(
+              `/province/${province.code}/${selectedYear}`
+            )
+
+          }}
+
         />
 
       </Toolbar>
 
     </AppBar>
 
-  );
+  )
 
 }
 
-export default Header;
+export default Header
